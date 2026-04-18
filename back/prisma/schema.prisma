@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+enum FuelType {
+  GASOLINE
+  ETHANOL
+  DIESEL
+  FLEX
+  ELECTRIC
+  HYBRID
+}
+
+model Vehicle {
+  id        String    @id @default(uuid())
+  plate     String    @unique
+  chassis   String    @unique
+  renavam   String    @unique
+  model     String
+  brand     String
+  year      Int
+  fuel      FuelType
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("vehicles")
+}

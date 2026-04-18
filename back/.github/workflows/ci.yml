@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: forum_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6377:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Write CI .env.test
+        run: |
+          cat > .env.test <<'EOF'
+          NODE_ENV=test
+          PORT=3333
+          DB_HOST=localhost
+          DB_PORT=5433
+          DB_USER=postgres
+          DB_PASSWORD=postgres
+          DB_NAME=forum_test
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5433/forum_test?schema=public
+          REDIS_HOST=localhost
+          REDIS_PORT=6377
+          REDIS_DB=1
+          EOF
+
+      - run: pnpm run lint:check
+      - run: pnpm run check-types
+      - run: pnpm run build
+      - run: pnpm run test:unit
+      - run: pnpm run migrate:deploy:test
+      - run: pnpm run test:e2e
