@@ -10,7 +10,7 @@ Monorepo com **backend REST** (NestJS 11, Fastify, Prisma, PostgreSQL, Redis) e 
 ## 1. Clonar o repositório
 
 ```bash
-git clone <url-do-repositorio> desafio
+git clone https://github.com/manoel-lopes/desafio.git desafio
 cd desafio
 ```
 
