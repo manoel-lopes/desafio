@@ -1,0 +1,9 @@
+<app-sidebar>
+  <main hlmSidebarInset class="flex max-h-svh flex-1 flex-col overflow-hidden">
+    <app-header />
+    <div class="flex-1 overflow-auto p-4 md:p-6">
+      <router-outlet />
+    </div>
+  </main>
+</app-sidebar>
+<ngx-sonner-toaster [richColors]="true" position="top-right" [theme]="theme.sonnerTheme()" />
