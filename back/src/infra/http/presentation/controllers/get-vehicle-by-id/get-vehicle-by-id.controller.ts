@@ -5,7 +5,7 @@ import {
   Param,
   UsePipes,
 } from '@nestjs/common'
-import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger'
 import { GetVehicleByIdUseCase } from '@/domain/application/usecases/get-vehicle-by-id/get-vehicle-by-id.use-case'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe'
 import { vehicleToHttp } from '@/infra/http/presentation/helpers/vehicle-to-http'
@@ -18,6 +18,7 @@ export class GetVehicleByIdController {
   constructor (private readonly getVehicleById: GetVehicleByIdUseCase) {}
 
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'Vehicle id (UUID)', schema: { type: 'string', format: 'uuid' } })
   @ApiOkResponse({ description: 'Vehicle found' })
   @ApiNotFoundResponse({ description: 'Vehicle not found' })
   @UsePipes(new ZodValidationPipe(vehicleParamsSchema))

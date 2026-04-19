@@ -7,7 +7,7 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common'
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
 import { CreateVehicleUseCase } from '@/domain/application/usecases/create-vehicle/create-vehicle.use-case'
 import { VehicleAlreadyExistsError } from '@/domain/application/usecases/errors/vehicle-already-exists.error'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe'
@@ -21,6 +21,22 @@ export class CreateVehicleController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiBody({
+    description: 'New vehicle',
+    schema: {
+      type: 'object',
+      required: ['plate', 'chassis', 'renavam', 'model', 'brand', 'year', 'fuel'],
+      example: {
+        plate: 'ABC1D23',
+        chassis: 'CHASSIS001',
+        renavam: '12345678901',
+        model: 'ModelX',
+        brand: 'BrandY',
+        year: 2024,
+        fuel: 'FLEX',
+      },
+    },
+  })
   @ApiCreatedResponse({ description: 'Vehicle created' })
   @UsePipes(new ZodValidationPipe(createVehicleBodySchema))
   async handle (@Body() body: ReturnType<typeof createVehicleBodySchema.parse>) {

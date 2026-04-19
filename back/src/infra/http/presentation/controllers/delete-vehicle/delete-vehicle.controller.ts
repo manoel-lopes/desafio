@@ -7,7 +7,7 @@ import {
   Param,
   UsePipes,
 } from '@nestjs/common'
-import { ApiNoContentResponse, ApiNotFoundResponse, ApiTags } from '@nestjs/swagger'
+import { ApiNoContentResponse, ApiNotFoundResponse, ApiParam, ApiTags } from '@nestjs/swagger'
 import { DeleteVehicleUseCase } from '@/domain/application/usecases/delete-vehicle/delete-vehicle.use-case'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe'
 import { ResourceNotFoundError } from '@/shared/application/errors/resource-not-found.error'
@@ -19,6 +19,7 @@ export class DeleteVehicleController {
   constructor (private readonly deleteVehicle: DeleteVehicleUseCase) {}
 
   @Delete(':id')
+  @ApiParam({ name: 'id', description: 'Vehicle id (UUID)', schema: { type: 'string', format: 'uuid' } })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'Vehicle deleted' })
   @ApiNotFoundResponse({ description: 'Vehicle not found' })

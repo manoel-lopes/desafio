@@ -13,8 +13,13 @@ async function bootstrap () {
   )
   await fastifyAdapter.configure(app)
   const envService = app.get(EnvService)
+  const allowedOrigins = envService.get('ALLOWED_ORIGINS')
+  const origin =
+    allowedOrigins && allowedOrigins.trim() !== ''
+      ? allowedOrigins.split(',').map((o) => o.trim())
+      : true
   app.enableCors({
-    origin: envService.get('ALLOWED_ORIGINS') ?? true,
+    origin,
     credentials: true,
   })
   const nodeEnv = envService.get('NODE_ENV')

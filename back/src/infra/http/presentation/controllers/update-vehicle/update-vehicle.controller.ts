@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
 } from '@nestjs/common'
-import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger'
 import { VehicleAlreadyExistsError } from '@/domain/application/usecases/errors/vehicle-already-exists.error'
 import { UpdateVehicleUseCase } from '@/domain/application/usecases/update-vehicle/update-vehicle.use-case'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe'
@@ -20,6 +20,14 @@ export class UpdateVehicleController {
   constructor (private readonly updateVehicle: UpdateVehicleUseCase) {}
 
   @Patch(':id')
+  @ApiParam({ name: 'id', description: 'Vehicle id (UUID)', schema: { type: 'string', format: 'uuid' } })
+  @ApiBody({
+    description: 'Partial vehicle (all fields optional)',
+    schema: {
+      type: 'object',
+      example: { model: 'Updated model', year: 2024 },
+    },
+  })
   @ApiOkResponse({ description: 'Vehicle updated' })
   @ApiNotFoundResponse({ description: 'Vehicle not found' })
   async handle (
