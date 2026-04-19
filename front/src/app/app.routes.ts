@@ -13,7 +13,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/vehicles/pages/vehicles-list.page').then((m) => m.VehiclesListPage),
     resolve: { initial: vehiclesListResolver },
-    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+    runGuardsAndResolvers: 'always',
     title: 'Veículos',
   },
   {
