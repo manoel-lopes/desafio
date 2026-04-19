@@ -3,8 +3,23 @@ services:
     build:
       context: ./back
       dockerfile: Dockerfile
+    # Compose loads `.env` from this directory for ${VAR} substitution below (works without a file if defaults suffice).
     env_file:
-      - .env
+      - path: .env
+        required: false
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3333}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-template_api}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/template_api?schema=public}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_DB: ${REDIS_DB:-0}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
     ports:
       - "${PORT:-3333}:${PORT:-3333}"
     depends_on:
@@ -12,16 +27,17 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    # TCP em 127.0.0.1:$PORT — não depende de HTTP/DB/Redis (portável em qualquer host Docker).
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "wget -qO /dev/null 'http://localhost:${PORT:-3333}/vehicles?page=1&pageSize=1' || exit 1",
+          'node -e "const p=Number(process.env.PORT||3333);const c=require(\"net\").createConnection(p,\"127.0.0.1\");c.on(\"connect\",()=>{c.end();process.exit(0)});c.on(\"error\",()=>process.exit(1));setTimeout(()=>process.exit(1),4000);"',
         ]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 40s
+      start_period: 60s
     restart: unless-stopped
     networks:
       - app
