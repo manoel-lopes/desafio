@@ -1,4 +1,4 @@
-# Dsahboard
+# Dashboard
 
 Monorepo com **backend REST** (NestJS 11, Fastify, Prisma, PostgreSQL, Redis) e **frontend** (Angular 21 com SSR). A forma recomendada de rodar é via **Docker Compose na raiz do repositório**.
 
